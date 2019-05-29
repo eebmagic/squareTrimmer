@@ -41,26 +41,32 @@ def makeFlat(inputArray):
 
 ###########################################################################
 ### SETTINGS ###
-PADDING = 5
-SQUARE = True
+PADDING = 5 
+SQUARE = False
 ################################
 
 ##### START #####
 
 ### LOAD DATA ###
-im = Image.open("Filtered.png")
-rawData = list(im.getdata())
+# im = Image.open("Filtered.png")
+im = Image.open("OK_MUSIC.png")
+originalData = list(im.getdata())
 
 ### SIMPLIFY DATA ###
+#make searchData
+searchData = []
+for point in originalData:
+	newTup = [round(x-(x%30), -1) for x in point[:3]]
+	searchData.append(tuple(newTup))
 
 ### FIND EDGE INDEXES ###
-background = getMostFreq(rawData)
-top = topPos(rawData, background)
-bottom = bottomPos(rawData, background)
-left = leftPos(rawData, im.size, background)
-right = rightPos(rawData, im.size, background)
+background = getMostFreq(searchData)
+top = topPos(searchData, background)
+bottom = bottomPos(searchData, background)
+left = leftPos(searchData, im.size, background)
+right = rightPos(searchData, im.size, background)
 
-# Convert Edges to Row/Collumns #
+# Convert Edge pixels to Rows/Collumns #
 edge = {
 	"left": left%im.size[0],
 	"right": right%im.size[0]+1,
@@ -69,16 +75,34 @@ edge = {
 }
 
 ### TRIM ###
-asArray = makeArray(rawData, im.size)
+asArray = makeArray(originalData, im.size)
+
+# Adjust Edges to make square
+if SQUARE:
+	width = abs(edge["right"] - edge["left"])
+	height = abs(edge["bottom"] - edge["top"])
+	difference = abs(height - width)
+
+	if width == height:
+		pass
+	
+	elif min(width, height) == height:
+		edge["bottom"] += difference/2
+		edge["top"] -= difference/2
+	
+	elif min(width, height) == width:
+		edge["left"] -= difference/2
+		edge["right"] += difference/2
+
 
 selection = []
 for row in asArray:
-	selection.append(row[edge["left"]-PADDING:edge["right"]+PADDING])
+	selection.append(row[int(edge["left"]-PADDING):int(edge["right"]+PADDING)])
 selection = selection[edge["top"]-PADDING:edge["bottom"]+PADDING]
 
 
 ### SAVE ###
-newSize = (edge["right"]-edge["left"]+(PADDING*2), edge["bottom"]-edge["top"]+(PADDING*2))
+newSize = (int(edge["right"]-edge["left"]+(PADDING*2)), int(edge["bottom"]-edge["top"]+(PADDING*2)))
 newIm = Image.new("RGB", newSize)
 newIm.putdata(makeFlat(selection))
 newIm.save("CROPPED.png")
