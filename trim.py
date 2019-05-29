@@ -1,4 +1,6 @@
 from PIL import Image
+import sys
+import os
 
 def getMostFreq(inputList):
 	frequencies = {}
@@ -46,10 +48,23 @@ SQUARE = False
 ################################
 
 ##### START #####
+### GET INPUT IMAGE ###
+if len(sys.argv) > 1:
+	IMAGE_PATH = sys.argv[1].strip()
+	print(IMAGE_PATH)
+else:
+	IMAGE_PATH = input("Drag file here: ").strip()
+
+if "-s" in sys.argv or "--s" in sys.argv:
+	SQUARE = True
+
+paddOptions = ["-p", "--p", "--padding"]
+for option in paddOptions:
+	if option in sys.argv:
+		PADDING = int(sys.argv[sys.argv.index(option)+1])
 
 ### LOAD DATA ###
-# im = Image.open("Filtered.png")
-im = Image.open("OK_MUSIC.png")
+im = Image.open(IMAGE_PATH)
 originalData = list(im.getdata())
 
 ### SIMPLIFY DATA ###
@@ -106,3 +121,4 @@ newSize = (int(edge["right"]-edge["left"]+(PADDING*2)), int(edge["bottom"]-edge[
 newIm = Image.new("RGB", newSize)
 newIm.putdata(makeFlat(selection))
 newIm.save("CROPPED.png")
+exit("Image saved as: CROPPED.png")
