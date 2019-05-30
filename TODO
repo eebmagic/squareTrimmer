@@ -1,0 +1,4 @@
+add stopper to prevent making PADDING variable making new image dimensions larger than possible 
+(results in black image currently).
+
+Should default largest possible size in cases of excessive padding.
