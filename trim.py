@@ -1,6 +1,7 @@
 from PIL import Image
 import sys
 import os
+from pathlib import Path
 
 def getMostFreq(inputList):
 	frequencies = {}
@@ -45,7 +46,8 @@ def makeFlat(inputArray):
 ### SETTINGS ###
 PADDING = 5 
 SQUARE = False
-################################
+OUTPUT_PATH = str(Path.home()) + "/Desktop/CROPPED.png"
+###########################################################################
 
 ##### START #####
 ### GET INPUT IMAGE ###
@@ -120,5 +122,5 @@ selection = selection[edge["top"]-PADDING:edge["bottom"]+PADDING]
 newSize = (int(edge["right"]-edge["left"]+(PADDING*2)), int(edge["bottom"]-edge["top"]+(PADDING*2)))
 newIm = Image.new("RGB", newSize)
 newIm.putdata(makeFlat(selection))
-newIm.save("CROPPED.png")
-exit("Image saved as: CROPPED.png")
+newIm.save(OUTPUT_PATH)
+exit("Image saved as: " + OUTPUT_PATH)
