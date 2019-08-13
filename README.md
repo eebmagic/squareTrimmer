@@ -1,4 +1,4 @@
-# squareTrimmer
+# square_trimmer
 Trims images with a flat background to be perfectly centered for your OCD.
 
 Image input should be an object with a regular and flat background. 
