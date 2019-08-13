@@ -54,7 +54,6 @@ def makeFlat(inputArray):
 # SETTINGS #
 PADDING = 5
 SQUARE = False
-OUTPUT_PATH = str(Path.home()) + "/Desktop/CROPPED.png"
 ###########################################################################
 
 # START #
@@ -68,6 +67,7 @@ else:
 if "-s" in sys.argv or "--s" in sys.argv:
 	SQUARE = True
 
+# Padding option
 paddOptions = ["-p", "--p", "--padding"]
 for option in paddOptions:
 	if option in sys.argv:
@@ -76,6 +76,14 @@ for option in paddOptions:
 		except IndexError:
 			quit(f"""\n### ERROR: No padding input was given after the {option} flag.
 Input must be a number of pixels for border.""")
+
+# Ouput file option
+if '-o' in sys.argv[1:]:
+	output_file_name = sys.argv[sys.argv[1:].index('-o') + 2]
+	if not output_file_name.endswith('.png'):
+		output_file_name += '.png'
+else:
+	output_file_name = None
 
 # LOAD DATA #
 im = Image.open(IMAGE_PATH)
@@ -115,11 +123,11 @@ if SQUARE:
 	if width == height:
 		pass
 
-	elif min(width, height) == height:
+	elif width > height == height:
 		edge["bottom"] += difference / 2
 		edge["top"] -= difference / 2
 
-	elif min(width, height) == width:
+	else:
 		edge["left"] -= difference / 2
 		edge["right"] += difference / 2
 
@@ -155,5 +163,12 @@ new_y = int(bottom_edge - top_edge)
 newSize = (new_x, new_y)
 newIm = Image.new("RGB", newSize)
 newIm.putdata(makeFlat(selection))
+
+if not output_file_name:
+	output_file_name = input("\n\tWhat do you want to name the output file?: ")
+	if not output_file_name.endswith('.png'):
+		output_file_name += '.png'
+
+OUTPUT_PATH = os.getcwd() + "/" + output_file_name
 newIm.save(OUTPUT_PATH)
 exit("Image saved as: " + OUTPUT_PATH)
