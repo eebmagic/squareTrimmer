@@ -60,7 +60,6 @@ SQUARE = False
 # GET INPUT IMAGE AND OPTIONS #
 if len(sys.argv) > 1:
 	IMAGE_PATH = sys.argv[1].strip()
-	print(IMAGE_PATH)
 else:
 	IMAGE_PATH = input("Drag file here: ").strip()
 
@@ -133,8 +132,6 @@ if SQUARE:
 
 
 selection = []
-print(edge)
-print(im.size)
 for row in asArray:
 	left_edge = int(edge["left"] - PADDING)
 	if left_edge < 0:
