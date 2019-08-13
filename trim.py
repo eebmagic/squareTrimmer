@@ -58,7 +58,7 @@ OUTPUT_PATH = str(Path.home()) + "/Desktop/CROPPED.png"
 ###########################################################################
 
 # START #
-# GET INPUT IMAGE #
+# GET INPUT IMAGE AND OPTIONS #
 if len(sys.argv) > 1:
 	IMAGE_PATH = sys.argv[1].strip()
 	print(IMAGE_PATH)
@@ -71,7 +71,11 @@ if "-s" in sys.argv or "--s" in sys.argv:
 paddOptions = ["-p", "--p", "--padding"]
 for option in paddOptions:
 	if option in sys.argv:
-		PADDING = int(sys.argv[sys.argv.index(option) + 1])
+		try:
+			PADDING = int(sys.argv[sys.argv.index(option) + 1])
+		except IndexError:
+			quit(f"""\n### ERROR: No padding input was given after the {option} flag.
+Input must be a number of pixels for border.""")
 
 # LOAD DATA #
 im = Image.open(IMAGE_PATH)
@@ -121,16 +125,33 @@ if SQUARE:
 
 
 selection = []
+print(edge)
+print(im.size)
 for row in asArray:
 	left_edge = int(edge["left"] - PADDING)
+	if left_edge < 0:
+		left_edge = 0
+
 	right_edge = int(edge["right"] + PADDING)
+	if right_edge > im.size[0]:
+		right_edge = im.size[0]
+
 	selection.append(row[left_edge:right_edge])
-selection = selection[edge["top"] - PADDING:edge["bottom"] + PADDING]
+
+top_edge = edge["top"] - PADDING
+if top_edge < 0:
+	top_edge = 0
+
+bottom_edge = edge["bottom"] + PADDING
+if bottom_edge > im.size[1]:
+	bottom_edge = im.size[1]
+
+selection = selection[top_edge:bottom_edge]
 
 
 # SAVE #
-new_x = int(edge["right"] - edge["left"] + (PADDING * 2))
-new_y = int(edge["bottom"] - edge["top"] + (PADDING * 2))
+new_x = int(right_edge - left_edge)
+new_y = int(bottom_edge - top_edge)
 newSize = (new_x, new_y)
 newIm = Image.new("RGB", newSize)
 newIm.putdata(makeFlat(selection))
